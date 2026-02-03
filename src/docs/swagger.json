@@ -75,15 +75,28 @@
                 "type": "object",
                 "required": ["name", "email", "subject", "message", "category"],
                 "properties": {
-                  "name": { "type": "string", "example": "John Doe" },
-                  "email": { "type": "string", "example": "john.doe@example.com" },
-                  "subject": { "type": "string", "example": "Issue with my account" },
-                  "message": { "type": "string", "example": "I am facing an issue with my account login." },
-                  "category": { "type": "string", "example": "General Inquiry" },
-                  "priority": { "type": "string", "enum": ["1", "2", "3"], "example": "2" },
-                  "hy": { "type": "string", "example": "3" },
-                  "hx": { "type": "string", "example": "" },
-                  "file_key": { "type": "string" }
+                  "name": { "type": "string", "example": "Daniel Reyes" },
+                  "email": {
+                    "type": "string",
+                    "example": "informatica@corporacionlacumbre.com"
+                  },
+                  "priority": {
+                    "type": "string",
+                    "enum": ["1", "2", "3"],
+                    "example": "2"
+                  },
+                  "subject": {
+                    "type": "string",
+                    "example": "Issue with my account"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "I am facing an issue with my account login."
+                  },
+                  "category": { "type": "string", "example": "3" },
+                  "hx": { "type": "string", "example": "3" },
+                  "hy": { "type": "string", "example": "" },
+                  "file_key": { "type": "string", "example": "" }
                 }
               }
             }

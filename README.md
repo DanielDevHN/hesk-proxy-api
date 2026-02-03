@@ -26,7 +26,7 @@ API intermedia desarrollada con **Node.js**, **Express** y **TypeScript** para l
 1. **Instalar dependencias:**
    ```
    npm install
-2. **Configurar el entorno: Crea un archivo .env en la raíz del proyecto basándote en lo siguiente:**
+2. **Configurar el entorno: Copiar el archivo .env.example y renombrar a .env en la raíz del proyecto y reemplazar los valores por defecto de las variables:**
 ```
     PORT=3000
     PHP_BASE_URL=http://localhost:8081

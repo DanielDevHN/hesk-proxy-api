@@ -89,7 +89,8 @@ export class TicketController {
   static async submitTicket(req: Request, res: Response): Promise<any> {
     try {
       const form = new FormData();
-      const fields = [
+
+      const orderedFields = [
         "name",
         "email",
         "priority",
@@ -100,44 +101,55 @@ export class TicketController {
         "hy",
       ];
 
-      fields.forEach((field) => {
-        if (req.body[field] !== undefined) {
-          form.append(field, req.body[field].toString());
-        }
+      orderedFields.forEach((field) => {
+        const value =
+          req.body[field] !== undefined ? req.body[field].toString() : "";
+        form.append(field, value);
       });
 
       const rawKey = req.body.file_key;
       if (rawKey) {
         const normalizedKey = rawKey.toString().trim();
         form.append("attachments[]", normalizedKey);
-
-        const response = await axios.post(
-          `${PHP_BASE_URL}/submit_ticket.php?submit=1`,
-          form,
-          {
-            headers: form.getHeaders(),
-          },
-        );
-
-        const filePath = fileTracker[normalizedKey];
-        if (filePath && fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-          delete fileTracker[normalizedKey];
-        }
-
-        return res.json(response.data);
       }
 
       const response = await axios.post(
-        `${PHP_BASE_URL}/submit_ticket.php?submit=1`,
+        `${process.env.PHP_BASE_URL}/submit_ticket.php?submit=1`,
         form,
         {
-          headers: form.getHeaders(),
+          headers: {
+            ...form.getHeaders(),
+            Cookie: `hesk_myemail=${encodeURIComponent(req.body.email || "")}`,
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+          },
         },
       );
+
+      if (rawKey) {
+        const normalizedKey = rawKey.toString().trim();
+        const filePath = fileTracker[normalizedKey];
+
+        if (filePath && fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+          delete fileTracker[normalizedKey];
+          console.log(
+            `✅ Archivo temporal ${normalizedKey} eliminado exitosamente.`,
+          );
+        }
+      }
+
       return res.json(response.data);
     } catch (error: any) {
-      return res.status(500).json({ error: error.message });
+      const status = error.response?.status || 500;
+      const errorData = error.response?.data || error.message;
+
+      console.error(`❌ Error en Hesk Submit (${status}):`, errorData);
+
+      return res.status(status).json({
+        success: false,
+        error: "Error al procesar el ticket en Hesk",
+        details: errorData,
+      });
     }
   }
 }

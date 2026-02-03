@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import "dotenv/config";
 import express from "express";
 import multer from "multer";
 import path from "path";
@@ -24,10 +24,22 @@ const swaggerDocument = JSON.parse(swaggerRaw);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-const uploadDir = path.resolve(__dirname, "../uploads");
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+const uploadDir = path.join(process.cwd(), "uploads");
+
+const ensureUploadDir = () => {
+  if (!fs.existsSync(uploadDir)) {
+    console.log("📂 Uploads folder not found. Creating...");
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+};
+
+ensureUploadDir();
+
 const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, uploadDir),
+  destination: (_req, _file, cb) => {
+    ensureUploadDir();
+    cb(null, uploadDir);
+  },
   filename: (_req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(
